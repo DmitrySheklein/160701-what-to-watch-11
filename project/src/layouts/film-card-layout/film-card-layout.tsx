@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import FilmCard from 'src/components/film-card/film-card';
 import Footer from 'src/components/footer/footer';
-import useCurrentLocation from 'src/hooks/location-path';
+import useCurrentLocation from 'src/hooks/location-path/location-path';
 import { TFilm } from 'src/types/films';
 
 type TFilmCardLayout = {

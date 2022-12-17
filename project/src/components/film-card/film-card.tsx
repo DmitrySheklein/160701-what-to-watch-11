@@ -15,7 +15,7 @@ import { fetchFilmAction } from 'src/store/api-actions';
 import Loader from '../loader/loader';
 import { getCurrentFilm, getCurrentFilmLoading } from 'src/store/films-process/selectors';
 import ErrorScreen from '../error-screen/error-screen';
-import useCurrentLocation from 'src/hooks/location-path';
+import useCurrentLocation from 'src/hooks/location-path/location-path';
 
 type TFilmCard = {
   films: TFilm[];

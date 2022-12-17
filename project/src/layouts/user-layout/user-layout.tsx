@@ -4,7 +4,7 @@ import Footer from 'src/components/footer/footer';
 import Header from 'src/components/header/header';
 
 import { useAppSelector } from 'src/hooks';
-import useCurrentLocation from 'src/hooks/location-path';
+import useCurrentLocation from 'src/hooks/location-path/location-path';
 import { getFavoriteFilms } from 'src/store/films-process/selectors';
 
 const UserLayout = () => {
