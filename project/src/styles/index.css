@@ -51,6 +51,10 @@ main {
   display: block;
 }
 
+a {
+  color: #252525;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -646,6 +650,12 @@ main {
 }
 .film-card__reviews-col:last-child {
   margin-right: 0;
+}
+
+.film-card__reviews-text {
+  color: #252525;
+  margin: 0;
+  font-size: 17px;
 }
 
 .film-card__header {

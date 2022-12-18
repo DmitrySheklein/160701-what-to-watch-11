@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Loader from 'src/components/loader/loader';
+import { RouteName } from 'src/const';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 import { fetchCommentsFilmAction } from 'src/store/api-actions';
 import { getComments, getCommentsLoading } from 'src/store/films-process/selectors';
@@ -17,7 +18,9 @@ const ReviewsTab = ({ film: { backgroundColor } }: { film: TFilm }) => {
       dispatch(fetchCommentsFilmAction(currentFilmId));
     }
   }, [currentFilmId, dispatch]);
+
   const currentFilmComments = useAppSelector(getComments);
+  const commentsCount = currentFilmComments.length;
   const isCommentsLoading = useAppSelector(getCommentsLoading);
   const getReviews = (filterFunc: (elem: unknown, i: number) => boolean | number) =>
     currentFilmComments.filter(filterFunc).map((review) => {
@@ -52,8 +55,22 @@ const ReviewsTab = ({ film: { backgroundColor } }: { film: TFilm }) => {
         <Loader isTransparent />
       ) : (
         <>
-          <div className="film-card__reviews-col">{getReviews((_, i) => !(i % 2))}</div>
-          <div className="film-card__reviews-col">{getReviews((_, i) => i % 2)}</div>
+          {commentsCount ? (
+            <>
+              <div className="film-card__reviews-col">{getReviews((_, i) => !(i % 2))}</div>
+              <div className="film-card__reviews-col">{getReviews((_, i) => i % 2)}</div>
+            </>
+          ) : (
+            <p className="film-card__reviews-text">
+              There are no reviews yet.
+              {currentFilmId && (
+                <>
+                  You can leave yours{' '}
+                  <Link to={`/${RouteName.Films}/${currentFilmId}/${RouteName.Review}`}>here</Link>.
+                </>
+              )}
+            </p>
+          )}
         </>
       )}
     </div>
