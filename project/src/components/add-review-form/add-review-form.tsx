@@ -87,7 +87,7 @@ const AddReviewForm = ({ backgroundColor }: TAddReviewForm) => {
             placeholder="Review text"
             onChange={onChange}
             value={formData[FormFieldName.Text]}
-            minLength={50}
+            minLength={10}
             maxLength={400}
             disabled={loading}
           />
