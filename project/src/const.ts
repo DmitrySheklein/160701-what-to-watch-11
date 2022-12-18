@@ -1,3 +1,4 @@
+const PUBLIC_URL = process.env.PUBLIC_URL;
 const DEFAULT_NAME_GENRE = 'All genres';
 const TIMEOUT_SHOW_ERROR = 2000;
 const RouteName = {
@@ -50,6 +51,7 @@ enum NameSpace {
 }
 
 export {
+  PUBLIC_URL,
   TIMEOUT_SHOW_ERROR,
   DEFAULT_NAME_GENRE,
   RouteName,
