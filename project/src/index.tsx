@@ -6,7 +6,7 @@ import { store } from './store';
 import { checkAuthAction, fetchFilmsAction } from 'src/store/api-actions';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import './index.css';
+import './styles/index.css';
 
 store.dispatch(checkAuthAction());
 store.dispatch(fetchFilmsAction());
