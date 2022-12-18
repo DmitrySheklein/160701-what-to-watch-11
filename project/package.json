@@ -2,7 +2,7 @@
   "name": "project",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://dmitrysheklein.github.io/160701-what-to-watch-11",
+  "homepage": "https://dmitrysheklein.github.io/160701-what-to-watch-11/",
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.6",
     "axios": "^0.27.2",
