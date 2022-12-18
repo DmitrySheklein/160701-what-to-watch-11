@@ -233,6 +233,15 @@ main {
   margin-right: 9px;
 }
 
+.btn--list-min {
+  min-width: auto;
+  padding: 10px 13px;
+}
+
+.btn--list-min svg {
+  margin-right: 0;
+}
+
 .catalog {
   margin-bottom: 115px;
   max-width: 1300px;
@@ -1198,6 +1207,7 @@ main {
 }
 
 .small-film-card {
+  position: relative;
   border-radius: 6px;
   overflow: hidden;
   position: relative;
@@ -1242,6 +1252,13 @@ main {
     color-stop(97%, rgba(0, 0, 0, 0.63))
   );
   background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0.63) 97%);
+}
+
+.small-film-card__mylist {
+  position: absolute;
+  z-index: 1;
+  top: 5px;
+  right: 5px;
 }
 
 .small-film-card__title {
@@ -1324,6 +1341,8 @@ main {
 }
 .user-block__name {
   font-size: 16px;
+  display: block;
+  text-align: center;
 }
 .user-block__link {
   display: block;
