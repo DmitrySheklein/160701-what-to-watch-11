@@ -38,7 +38,7 @@ const App = (): JSX.Element => {
   }
 
   return (
-    <HistoryRouter history={browserHistory}>
+    <HistoryRouter history={browserHistory} basename={process.env.PUBLIC_URL}>
       <ScrollToTop />
       <HelmetProvider>
         <Routes>
