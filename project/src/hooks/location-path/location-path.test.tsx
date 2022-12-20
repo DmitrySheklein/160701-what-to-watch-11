@@ -22,12 +22,12 @@ jest.mock(
 );
 
 describe('ONLY Hook: useCurrentLocation', () => {
-  it('should return object with 5 elements', () => {
+  it('should return object with 5 elements and has isRootPage', () => {
     const {
       result: { current },
     } = renderHook(() => useCurrentLocation());
 
-    // expect(current).toHaveLength(5);
+    expect(Object.keys(current)).toHaveLength(5);
     expect(current).toBeInstanceOf(Object);
     expect(current).toHaveProperty('isRootPage');
     expect(current.isRootPage).toBe(true);
