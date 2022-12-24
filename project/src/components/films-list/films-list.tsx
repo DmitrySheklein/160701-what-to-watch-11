@@ -1,58 +1,55 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import SmallFilmCard from '../small-film-card/small-film-card';
 import { TFilmsList } from 'src/types/films';
 import ShowMoreBtn from 'src/components/show-more-btn/show-more-btn';
 
-const FilmsList = ({ films, maxFilms = films.length, withWhowMoreBtn = false }: TFilmsList) => {
-  const filmsLength = films.length;
-  const FILM_COUNT_PER_STEP = maxFilms;
+const FILM_COUNT_DEFAULT = 8;
+const FILM_COUNT_PER_STEP = 4;
+
+const FilmsList = ({ films }: TFilmsList) => {
   const [renderedFilmCount, setRenderedFilmCount] = useState(
-    Math.min(FILM_COUNT_PER_STEP, filmsLength),
+    Math.min(FILM_COUNT_DEFAULT, films.length),
   );
-  useEffect(() => {
-    setRenderedFilmCount(Math.min(FILM_COUNT_PER_STEP, filmsLength));
-  }, [films, FILM_COUNT_PER_STEP, filmsLength]);
+  const withWhowMoreBtn = renderedFilmCount < films.length;
+
+  useLayoutEffect(() => {
+    setRenderedFilmCount(Math.min(FILM_COUNT_DEFAULT, films.length));
+  }, [films]);
 
   const [activeFilmCard, setActiveFilmCard] = useState<number | null>(null);
   const timer = useRef<NodeJS.Timeout>();
 
-  const cardMouseOverHandler = (id: number) => {
+  const cardMouseOverHandler = useCallback((id: number) => {
     timer.current = setTimeout(() => {
       setActiveFilmCard(id);
     }, 1000);
-  };
-  const cardMouseLeaveHandler = () => {
+  }, []);
+
+  const cardMouseLeaveHandler = useCallback(() => {
     setActiveFilmCard(null);
     if (timer.current) {
       clearTimeout(timer.current);
     }
-  };
+  }, []);
 
-  const clickShowMoreBtnHandler = () =>
-    setRenderedFilmCount(() => {
-      const newRenderedFilmsCount = Math.min(filmsLength, renderedFilmCount + FILM_COUNT_PER_STEP);
-
-      return newRenderedFilmsCount;
-    });
+  const clickShowMoreBtnHandler = useCallback(() =>
+    setRenderedFilmCount(Math.min(films.length, renderedFilmCount + FILM_COUNT_PER_STEP))
+  , [films, renderedFilmCount]);
 
   return (
     <>
       <div className="catalog__films-list">
-        {films
-          .filter((_, idx) => idx + 1 <= renderedFilmCount)
-          .map((film) => (
-            <SmallFilmCard
-              key={film.id}
-              film={film}
-              onMouseOver={cardMouseOverHandler}
-              onMouseLeave={cardMouseLeaveHandler}
-              playing={film.id === activeFilmCard}
-            />
-          ))}
+        {films.slice(0, renderedFilmCount).map((film) => (
+          <SmallFilmCard
+            playing={film.id === activeFilmCard}
+            key={film.id}
+            onMouseOver={cardMouseOverHandler}
+            film={film}
+            onMouseLeave={cardMouseLeaveHandler}
+          />
+        ))}
       </div>
-      {withWhowMoreBtn && renderedFilmCount < films.length && (
-        <ShowMoreBtn onClick={clickShowMoreBtnHandler} />
-      )}
+      {withWhowMoreBtn && <ShowMoreBtn onClick={clickShowMoreBtnHandler} />}
     </>
   );
 };

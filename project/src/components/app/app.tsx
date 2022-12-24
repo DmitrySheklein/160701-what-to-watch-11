@@ -35,7 +35,7 @@ const App = (): JSX.Element => {
           <Route path={AppRoute.Player} element={<PlayerPage films={films} />} />
 
           <Route element={<FilmCardLayout films={films} />}>
-            <Route path={AppRoute.Root} element={<MainPage films={films} />} />
+            <Route index element={<MainPage films={films} />} />
             <Route
               path={AppRoute.AddReview}
               element={

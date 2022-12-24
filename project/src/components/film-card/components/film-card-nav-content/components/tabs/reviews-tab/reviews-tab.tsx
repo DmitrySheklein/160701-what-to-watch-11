@@ -1,26 +1,21 @@
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Loader from 'src/components/loader/loader';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 import { fetchCommentsFilmAction } from 'src/store/api-actions';
 import { getComments, getCommentsLoading } from 'src/store/films-process/selectors';
-import { TFilm } from 'src/types/films';
+import { TFilm, TFilmComment } from 'src/types/films';
 import { HumanizeDate } from 'src/utils/date';
 import { adjustColor } from 'src/utils/main';
 
-const ReviewsTab = ({ film: { backgroundColor } }: { film: TFilm }) => {
-  const dispatch = useAppDispatch();
-  const { id: currentFilmId } = useParams();
+type TCommentList = {
+  comments: TFilmComment[];
+backgroundColor: string;
+}
 
-  useEffect(() => {
-    if (currentFilmId) {
-      dispatch(fetchCommentsFilmAction(currentFilmId));
-    }
-  }, [currentFilmId, dispatch]);
-  const currentFilmComments = useAppSelector(getComments);
-  const isCommentsLoading = useAppSelector(getCommentsLoading);
+const CommentList = ({comments, backgroundColor}: TCommentList) => {
   const getReviews = (filterFunc: (elem: unknown, i: number) => boolean | number) =>
-    currentFilmComments.filter(filterFunc).map((review) => {
+    comments.filter(filterFunc).map((review) => {
       const {
         id,
         comment,
@@ -46,15 +41,38 @@ const ReviewsTab = ({ film: { backgroundColor } }: { film: TFilm }) => {
         </div>
       );
     });
+
+  return (
+    <>
+      <div className="film-card__reviews-col">{getReviews((_, i) => !(i % 2))}</div>
+      <div className="film-card__reviews-col">{getReviews((_, i) => i % 2)}</div>
+    </>
+  );
+};
+
+const getIdsHash = (arr: {id: number | string }[]) => arr.map(({id}) => id).join();
+
+const CommentListMemo = memo(CommentList, (prev, next) => getIdsHash(prev.comments) === getIdsHash(next.comments));
+
+const ReviewsTab = ({ film: { backgroundColor } }: { film: TFilm }) => {
+  const dispatch = useAppDispatch();
+  const { id: currentFilmId } = useParams();
+
+  useEffect(() => {
+    if (currentFilmId) {
+      dispatch(fetchCommentsFilmAction(currentFilmId));
+    }
+  }, [currentFilmId, dispatch]);
+
+  const currentFilmComments = useAppSelector(getComments);
+  const isCommentsLoading = useAppSelector(getCommentsLoading);
+
   return (
     <div className="film-card__reviews film-card__row">
       {isCommentsLoading ? (
         <Loader isTransparent />
       ) : (
-        <>
-          <div className="film-card__reviews-col">{getReviews((_, i) => !(i % 2))}</div>
-          <div className="film-card__reviews-col">{getReviews((_, i) => i % 2)}</div>
-        </>
+        <CommentListMemo comments={currentFilmComments} backgroundColor={backgroundColor} />
       )}
     </div>
   );

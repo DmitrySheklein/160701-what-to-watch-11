@@ -1,15 +1,17 @@
 import { Link } from 'react-router-dom';
 import { RouteName } from 'src/const';
-import { useAppSelector } from 'src/hooks';
-import { getCurrentFilm } from 'src/store/films-process/selectors';
+import { TFilm } from 'src/types/films';
 
-const Breadcrumbs = () => {
-  const currenFilm = useAppSelector(getCurrentFilm);
+type TBreadcrumbs = {
+  film: TFilm;
+};
 
-  if (!currenFilm) {
+const Breadcrumbs = ({film}: TBreadcrumbs) => {
+  if (!film) {
     return null;
   }
-  const { id, name } = currenFilm;
+
+  const { id, name } = film;
   return (
     <nav className="breadcrumbs">
       <ul className="breadcrumbs__list">

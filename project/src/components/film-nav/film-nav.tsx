@@ -1,11 +1,10 @@
-import { Link } from 'react-router-dom';
-
 type TFilmNav = {
   data: string[];
   current: string;
+  onChange: (item: string) => void;
 };
 
-const FilmNav = ({ data, current }: TFilmNav) => (
+const FilmNav = ({ data, current, onChange }: TFilmNav) => (
   <nav className="film-nav film-card__nav">
     <ul className="film-nav__list">
       {data.map((item) => {
@@ -14,9 +13,9 @@ const FilmNav = ({ data, current }: TFilmNav) => (
         //TODO использовать classNames
         return (
           <li key={item} className={`film-nav__item ${isCurrent ? 'film-nav__item--active' : ''}`}>
-            <Link to={`#${item}`} className="film-nav__link">
+            <div onClick={() => onChange(item)} className="film-nav__link">
               {item}
-            </Link>
+            </div>
           </li>
         );
       })}
