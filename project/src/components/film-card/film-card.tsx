@@ -1,5 +1,5 @@
-import { PropsWithChildren, useEffect } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { memo, PropsWithChildren, useState } from 'react';
+import { Navigate, useParams } from 'react-router-dom';
 import { TFilm } from 'src/types/films';
 import { adjustColor } from 'src/utils/main';
 import AddReviewForm from '../add-review-form/add-review-form';
@@ -10,16 +10,115 @@ import FilmCardButtons from './components/film-card-buttons/film-card-buttons';
 import FilmCardPoster from './components/film-card-poster/film-card-poster';
 import FilmCardData from './components/film-card-data/film-card-data';
 import FilmCardNavContent from './components/film-card-nav-content/film-card-nav-content';
-import { useAppDispatch, useAppSelector } from 'src/hooks';
-import { fetchFilmAction } from 'src/store/api-actions';
-import Loader from '../loader/loader';
-import { getCurrentFilm, getCurrentFilmLoading } from 'src/store/films-process/selectors';
-import ErrorScreen from '../error-screen/error-screen';
 import useCurrentLocation from 'src/hooks/location-path';
+import { AppRoute } from 'src/const';
+import cn from 'classnames';
 
 type TFilmCard = {
   films: TFilm[];
 };
+
+const FilmCardHeroWrap = ({ children, isMoviePage }: PropsWithChildren & {isMoviePage: boolean}) =>
+  isMoviePage ? <div className="film-card__hero">{children}</div> : <>{children}</>;
+
+const FilmCardHeaderWrap = ({ children, isAddReviewPage }: PropsWithChildren & {isAddReviewPage: boolean}) =>
+  isAddReviewPage ? <div className="film-card__header">{children}</div> : <>{children}</>;
+
+const FilmCardWrap = ({
+  children,
+  className = '',
+}: PropsWithChildren<{ className?: string }>) => (
+  <div className={`film-card__wrap ${className}`}>{children}</div>
+);
+
+const FilmCardDescr = ({ children }: PropsWithChildren) => (
+  <div className="film-card__desc">{children}</div>
+);
+
+const FilmCardInfo = ({ children }: PropsWithChildren) => (
+  <div className="film-card__info">{children}</div>
+);
+
+type TFilmCardContentMovie = {
+  film: TFilm;
+}
+
+const FilmCardContentMovie = ({film}: TFilmCardContentMovie) => {
+  const [activeTab, setActiveTab] = useState<string>(TabsNames.Overview);
+  return (
+    <>
+      <FilmNav data={Object.values(TabsNames)} onChange={setActiveTab} current={activeTab} />
+      <FilmCardNavContent current={activeTab} film={film} />
+    </>
+  );
+};
+
+type TFilmCardContentRoot = {
+  film: TFilm;
+}
+
+const FilmCardContentRoot = ({film}: TFilmCardContentRoot) => {
+  const {name, genre, released, id} = film;
+  return (
+    <>
+      <FilmCardData name={name} genre={genre} released={released} />
+      <FilmCardButtons id={id} withReviewButton={false} />
+    </>
+  );
+};
+
+type TFilmCardContent = {
+  film: TFilm;
+  isMoviePage: boolean;
+  isRootPage: boolean;
+}
+
+const FilmCardContent = ({ film, isRootPage, isMoviePage}: TFilmCardContent) => {
+  const {posterImage, name} = film;
+  return (
+    <FilmCardWrap className={cn({ 'film-card__translate-top': isMoviePage })}>
+      <FilmCardInfo>
+        <FilmCardPoster posterImage={posterImage} name={name} isBig={isMoviePage} />
+        <FilmCardDescr>
+          {isMoviePage && <FilmCardContentMovie film={film} />}
+          {isRootPage && <FilmCardContentRoot film={film} />}
+        </FilmCardDescr>
+      </FilmCardInfo>
+    </FilmCardWrap>
+  );
+};
+
+type TFilmCardHeader = {
+  film: TFilm;
+  isAddReviewPage: boolean;
+  isMoviePage: boolean;
+}
+
+function FilmCardHeader({ film, isAddReviewPage, isMoviePage }: TFilmCardHeader) {
+  const {backgroundImage, name, posterImage, genre, id, released } = film;
+  return (
+    <FilmCardHeroWrap isMoviePage={isMoviePage}>
+      <div className="film-card__bg">
+        <img src={backgroundImage} alt={name} />
+      </div>
+
+      <h1 className="visually-hidden">WTW</h1>
+
+      <Header>{isAddReviewPage && <Breadcrumbs film={film} />}</Header>
+      {isAddReviewPage && <FilmCardPoster posterImage={posterImage} name={name} isSmall />}
+      {isMoviePage && (
+        <FilmCardWrap>
+          <FilmCardDescr>
+            <FilmCardData name={name} genre={genre} released={released} />
+            <FilmCardButtons id={id} />
+          </FilmCardDescr>
+        </FilmCardWrap>
+      )}
+
+    </FilmCardHeroWrap>);
+}
+
+const FilmCardHeaderMemo = memo(FilmCardHeader, (prev, next) => prev.film.id === next.film.id);
 
 const TabsNames = {
   Overview: 'Overview',
@@ -28,103 +127,25 @@ const TabsNames = {
 } as const;
 
 const FilmCard = ({ films }: TFilmCard) => {
-  const location = useLocation();
   const { isMoviePage, isAddReviewPage, isRootPage } = useCurrentLocation();
   const isFull = isMoviePage || isAddReviewPage;
-  const dispatch = useAppDispatch();
-  const DEFAULT_FILM_ID = films[0]?.id;
-  const { id: currentFilmId = DEFAULT_FILM_ID } = useParams();
+  const { id: currentFilmId } = useParams();
 
-  useEffect(() => {
-    if (currentFilmId) {
-      dispatch(fetchFilmAction(currentFilmId));
-    }
-  }, [currentFilmId, dispatch]);
+  const activeFilm = (currentFilmId && films.find((film) => film.id === Number(currentFilmId))) || films[0];
 
-  const currentFilm = useAppSelector(getCurrentFilm);
-  const currentFilmLoading = useAppSelector(getCurrentFilmLoading);
-
-  if (currentFilmLoading) {
-    return <Loader />;
+  if (!activeFilm) {
+    return <Navigate to={AppRoute.ErrorPage} />;
   }
 
-  if (!currentFilm) {
-    if (isRootPage) {
-      return null;
-    }
-    return <ErrorScreen statusCode={404} />;
-  }
-
-  const { id, name, posterImage, backgroundImage, genre, released, backgroundColor } = currentFilm;
-
-  const FilmCardHeroWrap = ({ children }: PropsWithChildren) =>
-    isMoviePage ? <div className="film-card__hero">{children}</div> : <>{children}</>;
-
-  const FilmCardHeaderWrap = ({ children }: PropsWithChildren) =>
-    isAddReviewPage ? <div className="film-card__header">{children}</div> : <>{children}</>;
-
-  const FilmCardWrap = ({
-    children,
-    className = '',
-  }: PropsWithChildren<{ className?: string }>) => (
-    <div className={`film-card__wrap ${className}`}>{children}</div>
-  );
-  const FilmCardDescr = ({ children }: PropsWithChildren) => (
-    <div className="film-card__desc">{children}</div>
-  );
-  const FilmCardInfo = ({ children }: PropsWithChildren) => (
-    <div className="film-card__info">{children}</div>
-  );
-
-  const dataNav = Object.keys(TabsNames);
-  const hashName = location.hash.slice(1);
-  const currentTab = hashName in TabsNames ? hashName : TabsNames.Overview;
+  const { backgroundColor } = activeFilm;
 
   return (
     <section className={`film-card ${isFull ? 'film-card--full' : ''}`} style={{ backgroundColor }}>
-      <FilmCardHeaderWrap>
-        <FilmCardHeroWrap>
-          <div className="film-card__bg">
-            <img src={backgroundImage} alt={name} />
-          </div>
-
-          <h1 className="visually-hidden">WTW</h1>
-
-          <Header>{isAddReviewPage && <Breadcrumbs />}</Header>
-          {isAddReviewPage && <FilmCardPoster posterImage={posterImage} name={name} isSmall />}
-          {isMoviePage && (
-            <FilmCardWrap>
-              <FilmCardDescr>
-                <FilmCardData name={name} genre={genre} released={released} />
-                <FilmCardButtons id={id} />
-              </FilmCardDescr>
-            </FilmCardWrap>
-          )}
-        </FilmCardHeroWrap>
-
-        {isMoviePage && (
-          <FilmCardWrap className="film-card__translate-top">
-            <FilmCardInfo>
-              <FilmCardPoster posterImage={posterImage} name={name} isBig />
-              <FilmCardDescr>
-                <FilmNav data={dataNav} current={currentTab} />
-                <FilmCardNavContent current={currentTab} film={currentFilm} />
-              </FilmCardDescr>
-            </FilmCardInfo>
-          </FilmCardWrap>
-        )}
-        {isRootPage && (
-          <FilmCardWrap>
-            <FilmCardInfo>
-              <FilmCardPoster posterImage={posterImage} name={name} />
-              <FilmCardDescr>
-                <FilmCardData name={name} genre={genre} released={released} />
-                <FilmCardButtons id={id} withReviewButton={false} />
-              </FilmCardDescr>
-            </FilmCardInfo>
-          </FilmCardWrap>
-        )}
+      <FilmCardHeaderWrap isAddReviewPage={isAddReviewPage}>
+        <FilmCardHeaderMemo film={activeFilm} isAddReviewPage={isAddReviewPage} isMoviePage={isMoviePage} />
+        <FilmCardContent film={activeFilm} isRootPage={isRootPage} isMoviePage={isMoviePage} />
       </FilmCardHeaderWrap>
+
       {isAddReviewPage && <AddReviewForm backgroundColor={adjustColor(backgroundColor, 10)} />}
     </section>
   );

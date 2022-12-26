@@ -14,7 +14,11 @@ const HistoryRouter = ({ basename, children, history }: HistoryRouterProps) => {
     location: history.location,
   });
 
-  useLayoutEffect(() => history.listen(setState), [history]);
+  useLayoutEffect(() => history.listen(({ action, location }) => {
+    if (location.pathname !== state.location.pathname) {
+      setState({ action, location });
+    }
+  }), [history, state]);
 
   return (
     <Router

@@ -15,8 +15,6 @@ import {
 export type TInitialState = {
   films: {
     currentGenre: string;
-    currentFilm: TFilm | null;
-    currentFilmLoading: boolean;
     all: TFilm[];
     similar: TFilm[];
     favorite: TFilm[];
@@ -31,9 +29,7 @@ export type TInitialState = {
 };
 export const initialState: TInitialState = {
   films: {
-    currentGenre: DEFAULT_NAME_GENRE,
-    currentFilm: null,
-    currentFilmLoading: false,
+    currentGenre: decodeURI(window.location.hash.slice(1)) || DEFAULT_NAME_GENRE,
     all: [],
     similar: [],
     allLoading: false,
@@ -64,17 +60,6 @@ export const filmsProcess = createSlice({
     });
     builder.addCase(fetchFilmsAction.rejected, (state) => {
       state.films.allLoading = false;
-    });
-
-    builder.addCase(fetchFilmAction.fulfilled, (state, action) => {
-      state.films.currentFilm = action.payload;
-      state.films.currentFilmLoading = false;
-    });
-    builder.addCase(fetchFilmAction.pending, (state) => {
-      state.films.currentFilmLoading = true;
-    });
-    builder.addCase(fetchFilmAction.rejected, (state) => {
-      state.films.currentFilmLoading = false;
     });
 
     builder.addCase(fetchFavoriteFilmsAction.fulfilled, (state, action) => {

@@ -3,11 +3,8 @@ import { TState } from 'src/types/state';
 
 export const getCurrentGenre = (state: TState) => state[NameSpace.Films].films.currentGenre;
 
-export const getCurrentFilm = (state: TState) => state[NameSpace.Films].films.currentFilm;
-export const getCurrentFilmLoading = (state: TState) =>
-  state[NameSpace.Films].films.currentFilmLoading;
-
 export const getFilms = (state: TState) => state[NameSpace.Films].films.all;
+export const getFilmById = (id: number) => (state: TState) => state[NameSpace.Films].films.all.find((film) => film.id === id);
 export const getFilmsLoading = (state: TState) => state[NameSpace.Films].films.allLoading;
 
 export const getSimilarFilms = (state: TState) => state[NameSpace.Films].films.similar;

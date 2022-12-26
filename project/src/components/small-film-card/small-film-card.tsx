@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { RouteName } from 'src/const';
 import { TFilmCard } from 'src/types/films';
@@ -37,4 +38,4 @@ const SmallFilmCard = ({ film, playing, onMouseOver, onMouseLeave }: TFilmCard) 
   );
 };
 
-export default SmallFilmCard;
+export default memo(SmallFilmCard, (prev, next) => prev.playing === next.playing && prev.film.id === next.film.id);
