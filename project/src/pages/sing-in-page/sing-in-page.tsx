@@ -56,6 +56,13 @@ const SingInPage = ({ authStatus }: TSingInPage) => {
       </Helmet>
       <div className="sign-in user-page__content">
         <form className="sign-in__htmlForm" onSubmit={formSubmitHandler}>
+          <div className="sign-in__example-message">
+            <h2>Example:</h2>
+            <ul>
+              <li>user@test.ru</li>
+              <li>test123456</li>
+            </ul>
+          </div>
           {!emptyField && validError && (
             <div className="sign-in__message">
               <p>{validError.message}</p>
