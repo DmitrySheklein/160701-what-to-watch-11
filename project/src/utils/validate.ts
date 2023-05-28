@@ -7,7 +7,7 @@ type TErrorReport = Omit<Joi.ErrorReport, 'local'> & {
 const AddCommentSchema = Joi.object({
   rating: Joi.number().not(0).required(),
   text: Joi.string()
-    .min(50)
+    .min(10)
     .max(400)
     .required()
     .error((errors) => {

@@ -2,12 +2,15 @@ import { Link } from 'react-router-dom';
 import { AppRoute, AuthStatus } from 'src/const';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 import { logoutAction } from 'src/store/api-actions';
+import { getFavoriteFilms } from 'src/store/films-process/selectors';
 import { getAuthorizationStatus, getUserData } from 'src/store/user-process/selectors';
 import { getTestId } from 'src/utils/main';
 
 const UserBlock = () => {
   const dispatch = useAppDispatch();
   const authStatus = useAppSelector(getAuthorizationStatus);
+  const favoriteFilms = useAppSelector(getFavoriteFilms);
+  const favoriteFilmsCount = favoriteFilms.length;
   const user = useAppSelector(getUserData);
   const isAuth = authStatus === AuthStatus.Auth;
 
@@ -17,7 +20,7 @@ const UserBlock = () => {
         <>
           <li className="user-block__item">
             <div className="user-block__avatar">
-              <Link to={AppRoute.MyList}>
+              <Link className="user-block__avatar-wrap" to={AppRoute.MyList}>
                 <img
                   src={user?.avatarUrl}
                   alt={user?.name}
@@ -26,6 +29,9 @@ const UserBlock = () => {
                   {...getTestId('avatar')}
                 />
               </Link>
+              {!!favoriteFilmsCount && (
+                <span className="user-block__count">{favoriteFilmsCount}</span>
+              )}
             </div>
             <span className="user-block__name">{user?.name}</span>
           </li>

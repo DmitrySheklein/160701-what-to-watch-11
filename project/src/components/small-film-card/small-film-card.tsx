@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { RouteName } from 'src/const';
 import { TFilmCard } from 'src/types/films';
+import MyListButton from '../film-card/components/film-card-buttons/mylist-button/mylist-button';
 import PlayerPreview from '../player-preveiw/player-preview';
 
 const SmallFilmCard = ({ film, playing, onMouseOver, onMouseLeave }: TFilmCard) => {
@@ -33,6 +34,7 @@ const SmallFilmCard = ({ film, playing, onMouseOver, onMouseLeave }: TFilmCard) 
           <span>{name}</span>
         </h3>
       </Link>
+      <MyListButton className="small-film-card__mylist" id={id} min />
     </article>
   );
 };

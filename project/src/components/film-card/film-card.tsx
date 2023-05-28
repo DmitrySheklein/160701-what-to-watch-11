@@ -30,7 +30,6 @@ const TabsNames = {
 const FilmCard = ({ films }: TFilmCard) => {
   const location = useLocation();
   const { isMoviePage, isAddReviewPage, isRootPage } = useCurrentLocation();
-  const isFull = isMoviePage || isAddReviewPage;
   const dispatch = useAppDispatch();
   const { id: currentFilmId } = useParams();
 
@@ -86,7 +85,10 @@ const FilmCard = ({ films }: TFilmCard) => {
   const currentTab = hashName in TabsNames ? hashName : TabsNames.Overview;
 
   return (
-    <section className={`film-card ${isFull ? 'film-card--full' : ''}`} style={{ backgroundColor }}>
+    <section
+      className={`film-card ${isAddReviewPage ? 'film-card--full' : ''}`}
+      style={{ backgroundColor }}
+    >
       <FilmCardHeaderWrap>
         <FilmCardHeroWrap>
           <div className="film-card__bg">
