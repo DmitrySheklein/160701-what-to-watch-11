@@ -19,8 +19,8 @@ enum FormFieldName {
 const SingInPage = ({ authStatus }: TSingInPage) => {
   const dispatch = useAppDispatch();
   const [formData, setFormData] = useState({
-    [FormFieldName.Email]: '',
-    [FormFieldName.Password]: '',
+    [FormFieldName.Email]: 'user@test.ru',
+    [FormFieldName.Password]: 'test123456',
   });
   const { error: validError } = LoginSchema.validate({
     email: formData[FormFieldName.Email],
@@ -44,9 +44,7 @@ const SingInPage = ({ authStatus }: TSingInPage) => {
       );
     }
   };
-  const emptyField = Boolean(
-    formData[FormFieldName.Email].length === 0 && formData[FormFieldName.Password].length === 0,
-  );
+
   if (authStatus === AuthStatus.Auth) {
     return <Navigate to={AppRoute.Root} />;
   }
@@ -57,14 +55,7 @@ const SingInPage = ({ authStatus }: TSingInPage) => {
       </Helmet>
       <div className="sign-in user-page__content">
         <form className="sign-in__htmlForm" onSubmit={formSubmitHandler}>
-          <div className="sign-in__example-message">
-            <h2>Example:</h2>
-            <ul>
-              <li>user@test.ru</li>
-              <li>test123456</li>
-            </ul>
-          </div>
-          {!emptyField && validError && (
+          {validError && (
             <div className="sign-in__message">
               <p>{validError.message}</p>
             </div>
@@ -79,6 +70,7 @@ const SingInPage = ({ authStatus }: TSingInPage) => {
                 id={FormFieldName.Email}
                 onChange={onChange}
                 autoComplete="autoComplete"
+                value={formData['user-email']}
                 {...getTestId('email')}
               />
               <label className="sign-in__label visually-hidden" htmlFor={FormFieldName.Email}>
@@ -104,7 +96,7 @@ const SingInPage = ({ authStatus }: TSingInPage) => {
             </div>
           </div>
           <div className="sign-in__submit">
-            <button className="sign-in__btn" type="submit" disabled={emptyField}>
+            <button className="sign-in__btn" type="submit" disabled={!!validError}>
               Sign in
             </button>
           </div>
