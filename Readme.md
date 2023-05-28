@@ -6,7 +6,7 @@
 ---
 # Демо сайта на Github Pages
 
-[ссылка](https://dmitrysheklein.github.io/160701-what-to-watch-11/)
+<a href="https://dmitrysheklein.github.io/160701-what-to-watch-11/" target="_blank">ссылка</a>
 
 ---
 
