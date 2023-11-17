@@ -2,7 +2,7 @@ import { Action } from 'redux';
 import thunk, { ThunkDispatch } from 'redux-thunk';
 import MockAdapter from 'axios-mock-adapter';
 import { configureMockStore } from '@jedmao/redux-mock-store';
-import { createApi } from 'src/services/api';
+import { api } from 'src/services/api';
 import {
   addCommentFilmAction,
   changeFavoriteFilmAction,
@@ -30,7 +30,6 @@ import { FavoriteData } from 'src/types/films';
 import { TAddReveiw } from 'src/types/reviews';
 
 describe('Async actions', () => {
-  const api = createApi();
   const mockApi = new MockAdapter(api);
   const middlewares = [thunk.withExtraArgument(api)];
 
